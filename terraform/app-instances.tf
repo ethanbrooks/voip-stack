@@ -5,14 +5,14 @@ provider "aws" {
   region      = var.region
 }
 resource "aws_instance" "master" {
-  ami           = "ami-26c43149"
-  instance_type = "t2.micro"
-  security_groups = ["aws_security_group.swarm.name"]
-  key_name = "aws_key_pair.deployer.key_name"
+  ami           = "ami-06bc4b335fb17ee3f"
+  instance_type = "a1.medium"
+  security_groups = [aws_security_group.swarm.name]
+  key_name = aws_key_pair.deployer.key_name
   connection {
     host = "ec2-52-3-82-134.compute-1.amazonaws.com"
     user = "ubuntu"
-    private_key = "ssh/key"
+    private_key = file("/opt/voip/voip.key")
   }
   provisioner "remote-exec" {
     inline = [
@@ -37,17 +37,17 @@ resource "aws_instance" "master" {
 
 resource "aws_instance" "slave" {
   count         = 2
-  ami           = "ami-26c43149"
-  instance_type = "t2.micro"
-  security_groups = ["aws_security_group.swarm.name"]
+  ami           = "ami-06bc4b335fb17ee3f"
+  instance_type = "a1.medium"
+  security_groups =  [aws_security_group.swarm.name]
   key_name = "aws_key_pair.deployer.key_name"
   connection {
     host = "ec2-52-3-82-134.compute-1.amazonaws.com"
     user = "ubuntu"
-    private_key = "ssh/key"
+    private_key = file("/opt/voip/voip.key")
   }
   provisioner "file" {
-    source = "key.pem"
+    source = "/opt/voip/voip.key"
     destination = "/home/ubuntu/key.pem"
   }
   provisioner "remote-exec" {

@@ -1,4 +1,4 @@
 resource "aws_key_pair" "deployer" {
-  key_name = "voip"
-  public_key = "file(/opt/voip/voip.pem)"
+  key_name = "voip.terraform"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7ifg9sqBhEERktf884oZ6YlfnvUS2KoJDwBtgvYvBEFJ9pStDZz6Kqxnf3OOqabHZlFZNK/lLWC0UP8/EnPEy/N6BttsJQaWQ/HzdC7fkvrdqnQCHKjRMephp6d99qiT435WwR18jo5YzK+oK4XEJsGmorJ3xnimg+tQ1KeVc1fH2zdmc3neFC+07faxg6U3g8l6/zePti2EIao6Ddg/aO+Adt0ueWjwmxjGUvmzSQ0qZrB1hG4UdtnU1PaSlBSxnptBO3z/mxzejXwc/tWDxPoTEwddfR3WYBzCUWfZ+RXXAPkKqYDQ2hl+yUoG0Xfv5waCTF9Chems/4bqQl0TF ethan.brooks@gmail.com"
 }
