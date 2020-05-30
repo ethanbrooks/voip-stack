@@ -5,23 +5,25 @@ provider "aws" {
   region      = var.region
 }
 resource "aws_instance" "master" {
-  ami           = "ami-06bc4b335fb17ee3f"
+  ami           = "ami-05d7ab19b28efa213"
   instance_type = "a1.medium"
   security_groups = [aws_security_group.swarm.name]
   key_name = aws_key_pair.deployer.key_name
   connection {
-    host = "ec2-52-3-82-134.compute-1.amazonaws.com"
+    host = self.public_ip
     user = "ubuntu"
     private_key = file("/opt/voip/voip.key")
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update",
-      "sudo apt-get install apt-transport-https ca-certificates",
-      "sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D",
-      "sudo sh -c 'echo \"deb https://apt.dockerproject.org/repo ubuntu-trusty main\" > /etc/apt/sources.list.d/docker.list'",
-      "sudo apt-get update",
-      "sudo apt-get install -y docker-engine=1.12.0-0~trusty",
+      "sudo apt-get -y update",
+      "sudo apt-get -y i apt-transport-https ca-certificates curl software-properties-common",
+      "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add", 
+      "sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      "sudo apt-get -y update",
+      "sudo apt-cache policy docker-ce",
+      "sudo apt-get -y install docker-ce", 
+      "sudo usermod -aG docker ubuntu",
       "sudo docker swarm init",
       "sudo docker swarm join-token --quiet worker > /home/ubuntu/token"
     ]
@@ -37,12 +39,12 @@ resource "aws_instance" "master" {
 
 resource "aws_instance" "slave" {
   count         = 2
-  ami           = "ami-06bc4b335fb17ee3f"
+  ami           = "ami-05d7ab19b28efa213"
   instance_type = "a1.medium"
   security_groups =  [aws_security_group.swarm.name]
-  key_name = "aws_key_pair.deployer.key_name"
+  key_name = aws_key_pair.deployer.key_name
   connection {
-    host = "ec2-52-3-82-134.compute-1.amazonaws.com"
+    host = self.public_ip
     user = "ubuntu"
     private_key = file("/opt/voip/voip.key")
   }
@@ -52,14 +54,16 @@ resource "aws_instance" "slave" {
   }
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update",
-      "sudo apt-get install apt-transport-https ca-certificates",
-      "sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D",
-      "sudo sh -c 'echo \"deb https://apt.dockerproject.org/repo ubuntu-trusty main\" > /etc/apt/sources.list.d/docker.list'",
-      "sudo apt-get update",
-      "sudo apt-get install -y docker-engine=1.12.0-0~trusty",
-      "sudo chmod 400 /home/ubuntu/test.pem",
-      "sudo scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i test.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/token .",
+      "sudo apt-get -y update",
+      "sudo apt-get -y i apt-transport-https ca-certificates curl software-properties-common",
+      "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add",
+      "sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      "sudo apt-get -y update",
+      "sudo apt-cache policy docker-ce",
+      "sudo apt-get -y install docker-ce",      
+      "sudo usermod -aG docker ubuntu",
+      "sudo chmod 400 /home/ubuntu/key.pem",
+      "sudo scp -o StrictHostKeyChecking=no -o NoHostAuthenticationForLocalhost=yes -o UserKnownHostsFile=/dev/null -i key.pem ubuntu@${aws_instance.master.private_ip}:/home/ubuntu/token .",
       "sudo docker swarm join --token $(cat /home/ubuntu/token) ${aws_instance.master.private_ip}:2377"
     ]
   }
