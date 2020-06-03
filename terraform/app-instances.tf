@@ -5,8 +5,10 @@ provider "aws" {
   region      = var.region
 }
 resource "aws_instance" "master" {
-  ami           = "ami-05d7ab19b28efa213"
-  instance_type = "a1.medium"
+  ami           = "ami-085925f297f89fce1" #amd64
+  #ami           = "ami-05d7ab19b28efa213" #arm64
+  #instance_type = "a1.medium" #arm64
+  instance_type = "t2.medium" #amd64
   security_groups = [aws_security_group.swarm.name]
   key_name = aws_key_pair.deployer.key_name
   connection {
@@ -19,7 +21,8 @@ resource "aws_instance" "master" {
       "sudo apt-get -y update",
       "sudo apt-get -y i apt-transport-https ca-certificates curl software-properties-common",
       "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add", 
-      "sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      #"sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      "sudo sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable';",
       "sudo apt-get -y update",
       "sudo apt-cache policy docker-ce",
       "sudo apt-get -y install docker-ce", 
@@ -39,8 +42,10 @@ resource "aws_instance" "master" {
 
 resource "aws_instance" "slave" {
   count         = 2
-  ami           = "ami-05d7ab19b28efa213"
-  instance_type = "a1.medium"
+  ami           = "ami-085925f297f89fce1" #amd64
+  #ami           = "ami-05d7ab19b28efa213" #arm64
+  #instance_type = "a1.medium" #arm64
+  instance_type = "t2.medium" #amd64
   security_groups =  [aws_security_group.swarm.name]
   key_name = aws_key_pair.deployer.key_name
   connection {
@@ -57,7 +62,8 @@ resource "aws_instance" "slave" {
       "sudo apt-get -y update",
       "sudo apt-get -y i apt-transport-https ca-certificates curl software-properties-common",
       "sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add",
-      "sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      #"sudo sudo add-apt-repository 'deb [arch=arm64] https://download.docker.com/linux/ubuntu bionic stable';",
+      "sudo sudo add-apt-repository 'deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable';",
       "sudo apt-get -y update",
       "sudo apt-cache policy docker-ce",
       "sudo apt-get -y install docker-ce",      
