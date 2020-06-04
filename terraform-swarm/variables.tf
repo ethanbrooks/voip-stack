@@ -1,0 +1,144 @@
+variable "name" {
+  description = "Specifies the name of the swarm that is going to be built.  It is used for names and DNS names."
+  default = "docker-swarm"
+}
+
+variable "managers" {
+  description = "Number of managers in the swarm.  This should be an odd number otherwise there may be issues with raft consensus."
+  default     = 3
+}
+
+variable "workers" {
+  description = "Number of workers in the swarm."
+  default     = 2
+}
+
+variable "create_daemon_certificate_request" {
+  description = "Create daemon certificate request."
+  default     = true
+}
+
+variable "vpc_id" {
+  description = "The VPC that will contain the swarm."
+  default = "vpc-08e7f421041da4651"
+}
+
+variable "cloud_config_extra" {
+  description = "Content added to the end of the cloud-config file."
+  default     = ""
+}
+
+variable "cloud_config_extra_script" {
+  description = "Shell script that will be executed on every node.  This can be used to set up EFS mounts in fstab or do node specific bootstrapping. This is executed after `init_manager.py`"
+  default     = ""
+}
+
+variable "exposed_security_group_ids" {
+  description = "These are security groups that are applied to the Docker swarm nodes primarily for accessing other resources or exposing to the Internet. (The variable name is kept for legacy reasons, but will be renamed to `additional_security_group_ids` the future)"
+  type        = list(string)
+  default     = ["sg-07a0698db9d4b5637"]
+}
+
+variable "s3_bucket_name" {
+  description = "The S3 bucket name, if not specified it will be the DNS name with .terraform added to the end."
+  default     = ""
+}
+
+variable "instance_type" {
+  description = "EC2 instance type.  This is can be overriden by `instance_type_manager` or `instance_type_worker`"
+  default     = "t3.micro"
+}
+
+variable "instance_type_manager" {
+  description = "Manager node EC2 instance type.  If not specified it will use the value of `instance_type`."
+  default     = ""
+}
+
+variable "instance_type_worker" {
+  description = "Worker node EC2 instance type.  If not specified it will use the value of `instance_type`"
+  default     = ""
+}
+variable "volume_size" {
+  description = "Size of root volume in gigabytes."
+  default     = 8
+}
+
+variable "swap_size" {
+  description = "Size of swap file in gigabytes.  It should be smaller than volume size as the file is put in the root volume."
+  default     = 1
+}
+
+variable "manager_subnet_segment_start" {
+  description = "This is added to the index to represent the third segment of the IP address."
+  default     = 10
+}
+
+variable "worker_subnet_segment_start" {
+  description = "This is added to the index to represent the third segment of the IP address."
+  default     = 110
+}
+
+variable "key_name" {
+  description = "The key name of the Key Pair to use for the instance; which can be managed using the aws_key_pair resource."
+  default     = ""
+}
+
+variable "daemon_count" {
+  description = "This is the number of daemons to expose.  This is a workaround as count in some contexts cannot be a computed value."
+  default     = 0
+}
+
+variable "daemon_ssh" {
+  description = "Exposes SSH port for the daemon."
+  default     = true
+}
+
+variable "daemon_tls" {
+  description = "Exposes TLS port for the daemon."
+  default     = false
+}
+
+
+variable "daemon_eip_ids" {
+  description = "These are elastic IP association IDs that will be attached to the daemon nodes.  The association is not performed in the module."
+  type        = list(string)
+  default     = []
+}
+
+variable "daemon_ca_cert_pem" {
+  description = "This is the cert for the CA. If this starts with `/` then a symlink will be created instead of writing out the file."
+  default     = ""
+}
+
+variable "daemon_private_key_pems" {
+  description = "These are private key PEMs to the manager nodes that will have their Docker sockets exposed.  Private key generation is not performed by this module.  If this starts with `/` then a symlink will be created instead of writing out the file."
+  type        = list(string)
+  default     = []
+}
+
+variable "daemon_cert_pems" {
+  description = "These are cert PEMs to the manager nodes that will have their Docker sockets exposed.  These are the  `daemon_cert_request_pems` that are signed by the CA.   If this starts with `/` then a symlink will be created instead of writing out the file."
+  type        = list(string)
+  default     = []
+}
+
+variable "daemon_private_key_algorithm" {
+  description = "The name of the algorithm for the key provided in manager_private_key_pems."
+  default     = "RSA"
+}
+
+variable "daemon_dns" {
+  description = "Public DNS names associated with the manager."
+  type        = list(string)
+  default     = []
+}
+
+variable "daemon_cidr_block" {
+  description = "CIDR block to allow access to the  the Docker daemon."
+  default     = "0.0.0.0/0"
+}
+
+variable "store_join_tokens_as_tags" {
+  description = "Store the Docker swarm join tokens as VPC tags."
+  default     = false
+}
