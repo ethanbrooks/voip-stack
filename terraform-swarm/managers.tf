@@ -4,7 +4,8 @@ data "template_file" "init_manager" {
 
   vars = {
     s3_bucket                 = aws_s3_bucket.terraform.bucket
-    region_name               = data.aws_region.current.name
+#    region_name               = data.aws_region.current.name
+    region_name               = var.provider_aws_region
     instance_index            = count.index
     vpc_name                  = local.dns_name
     store_join_tokens_as_tags = var.store_join_tokens_as_tags ? 1 : 0
