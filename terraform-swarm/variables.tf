@@ -18,18 +18,23 @@ variable "create_daemon_certificate_request" {
   default     = true
 }
 
+variable "cloud_config_extra_script" {
+  description = "Shell script that will be executed on every node.  This can be used to set up EFS mounts in fstab or do node specific bootstrapping. This is executed after `init_manager.py`"
+  default     = ""
+}
+
 variable "vpc_id" {
   description = "The VPC that will contain the swarm."
   default = "vpc-08e7f421041da4651"
 }
 
-variable "cloud_config_extra" {
-  description = "Content added to the end of the cloud-config file."
-  default     = ""
+variable "region" {
+  description = "AWS regions."
+  default     = "us-east-1"
 }
 
-variable "cloud_config_extra_script" {
-  description = "Shell script that will be executed on every node.  This can be used to set up EFS mounts in fstab or do node specific bootstrapping. This is executed after `init_manager.py`"
+variable "cloud_config_extra" {
+  description = "Content added to the end of the cloud-config file."
   default     = ""
 }
 
